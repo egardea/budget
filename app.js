@@ -1,14 +1,8 @@
+//Budget controller
 const budgetController = (() => {
-    const x = 23;
 
-    const add = (a) => {
-        return x + a;
-    }
-    return {
-        publicTest: (b) => {
-            return add(b);
-        }
-    }
+
+
 })();
 
 //UI controller
@@ -18,15 +12,28 @@ const UIController = (() => {
 
 })();
 
-//app controller
+//Global app controller
 const controller = ((budgetCtrl, UICtrl) => {
 
-    let z = budgetCtrl.publicTest(5);
+    const ctrlAddItem = () => {
+        //get the input data
 
-    return {
-        anotherPublic: () => {
-            console.log(z);
-        }
+        //add the item to the budget controller
+
+        //add the item to the UI
+
+        //calculate the budget
+
+        //display the budget on the UI
+        
     }
 
+    document.querySelector('.add__btn').addEventListener('click', ctrlAddItem);
+
+    document.addEventListener('keypress', (e) => {
+        if(e.keyCode === 13) {
+            ctrlAddItem();
+        }
+    });
+    
 })(budgetController, UIController);
