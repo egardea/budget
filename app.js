@@ -8,7 +8,13 @@ const budgetController = (() => {
 //UI controller
 const UIController = (() => {
 
-    //some code
+    return {
+        getInput: () => {
+            let type = document.querySelector('.add__type').value; //will be either INC or EXP
+            let description = document.querySelector('.add__description').value; //description
+            let value = document.querySelector('.add__value').value; //value amount
+        }
+    }
 
 })();
 
@@ -17,7 +23,7 @@ const controller = ((budgetCtrl, UICtrl) => {
 
     const ctrlAddItem = () => {
         //get the input data
-
+        
         //add the item to the budget controller
 
         //add the item to the UI
