@@ -28,6 +28,36 @@ const budgetController = (() => {
         },
     };
 
+    return {
+        addItem: (type, des, val) => {
+            let newItem, ID;
+
+            //created new id based on inc or exp
+            if(data.allItems[type].length > 0){
+                ID = data.allItems[type][data.allItems[type].length - 1].id + 1;
+            } else {
+                ID = 0;
+            }
+
+            if(type === 'exp') {
+                newItem = new Expense(ID, des, val);
+            } else if(type === 'inc'){
+                newItem = new Income(ID, des, val);
+            }
+
+            //push the item into the data structure 
+            data.allItems[type].push(newItem);
+
+            //return the new element
+            return newItem;
+
+        },
+
+        testing: () => {
+            console.log(data);
+        }
+    };
+
 })();
 
 //UI controller
@@ -78,6 +108,10 @@ const controller = ((budgetCtrl, UICtrl) => {
         const DOMStrings = UICtrl.getDOMStrings();
 
         //add the item to the budget controller
+        let newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+        console.log(newItem);
+
+        //add the item to the UI
         const listItem = `
             <div class="item clearfix" id="${input.type === 'exp' ? 'expense' : 'income'}-0">
                 <div class="item__description">${input.description}</div>
@@ -96,8 +130,6 @@ const controller = ((budgetCtrl, UICtrl) => {
         } else if(input.type === 'inc') {
             document.querySelector(DOMStrings.incomeList).insertAdjacentHTML('beforeend', listItem);
         }
-        //add the item to the UI
-
         //calculate the budget
 
         //display the budget on the UI
