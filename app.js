@@ -1,16 +1,20 @@
 //Budget controller
 const budgetController = (() => {
 
-    const Expense = function(id, description, value) {
+    class Expense {
+        constructor(id, description, value) {
             this.id = id;
             this.description = description;
             this.value = value;
+        }
     };
 
-    const Income = function(id, description, value) {
+    class Income {
+        constructor(id, description, value) {
             this.id = id;
             this.description = description;
             this.value = value;
+        }
     };
 
     const calcTotal = (type) => {
@@ -19,7 +23,7 @@ const budgetController = (() => {
             sum += current.value;
         });
 
-        data.allItems[type] = sum;
+        data.totals[type] = sum;
     };
 
     const data = {
@@ -69,7 +73,11 @@ const budgetController = (() => {
             data.budget = data.totals.inc - data.totals.exp;
 
             //calculate the percentage of income that is spent
-            data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+            if(data.totals.inc > 0){
+                data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+            } else {
+                data.percentage = -1;
+            }
         },
 
         getBudget: () => {
@@ -98,7 +106,16 @@ const UIController = (() => {
         inputBtn: '.add__btn',
         expenseList: '.expenses__list',
         incomeList: '.income__list',
-    }
+        budgetLabel: '.budget__value',
+        incomeLabel: '.budget__income--value',
+        expenseLabel: '.budget__expenses--value',
+        percentageLabel: '.budget__expenses--percentage',
+    };
+
+    const formatNumber = (n) => {
+        let parts=n.toString().split(".");
+        return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? "." + parts[1] : "");
+    };
 
     return {
         getInput: () => {
@@ -147,6 +164,18 @@ const UIController = (() => {
 
             fieldsToArray[0].focus();
         },
+
+        displayBudget: (obj) => {
+            document.querySelector(DOMStrings.budgetLabel).textContent = formatNumber(obj.budget);
+            document.querySelector(DOMStrings.incomeLabel).textContent = formatNumber(obj.totalInc);
+            document.querySelector(DOMStrings.expenseLabel).textContent = formatNumber(obj.totalExp);
+
+            if(obj.percentage > 0) {
+                document.querySelector(DOMStrings.percentageLabel).textContent = obj.percentage + '%';
+            } else {
+                document.querySelector(DOMStrings.percentageLabel).textContent = '---';
+            }
+        },
     };
 
 })();
@@ -174,7 +203,7 @@ const controller = ((budgetCtrl, UICtrl) => {
         let budget = budgetCtrl.getBudget();
 
         //display the budget on the UI
-        console.log(budget);
+        UICtrl.displayBudget(budget);
 
     };
     
