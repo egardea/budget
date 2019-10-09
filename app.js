@@ -1,30 +1,16 @@
 //Budget controller
 const budgetController = (() => {
 
-    class Expense {
-        constructor(id, description, value) {
+    const Expense = function(id, description, value) {
             this.id = id;
             this.description = description;
             this.value = value;
-        };
-        calcPercentage(totalIncome) {
-            if(totalIncome > 0) {
-                this.percentage = Math.round((this.value / totalIncome) * 100);
-            } else {
-                this.percentage = -1;
-            }
-        };
-        getPercentage() {
-            return this.percentage;
-        };
     };
 
-    class Income {
-        constructor(id, description, value) {
+    const Income = function(id, description, value) {
             this.id = id;
             this.description = description;
             this.value = value;
-        };
     };
 
     const calcTotal = (type) => {
@@ -74,21 +60,17 @@ const budgetController = (() => {
 
         },
 
-        /*calculateBudget: () => {
-            //calculate the totals for income and expenses
-            calcTotal('exp');
+        calcBudget: () => {
+            //calculate the total income and expenses
             calcTotal('inc');
+            calcTotal('exp');
 
-            //calculate the budget inc minues expenses
+            //calculate the budget
             data.budget = data.totals.inc - data.totals.exp;
 
-            //calculate the percentage of income that we have spent
-            if(data.totals.inc > 0) {
-                data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
-            } else {
-                data.percentage = -1;
-            }
-        },*/
+            //calculate the percentage of income that is spent
+            data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+        },
 
         getBudget: () => {
             return {
@@ -186,10 +168,13 @@ const controller = ((budgetCtrl, UICtrl) => {
 
     const updateBudget = () => {
         //calculate the budget
-
-        //return the budget on a variable
+        budgetCtrl.calcBudget();
         
+        //return the budget on a variable
+        let budget = budgetCtrl.getBudget();
+
         //display the budget on the UI
+        console.log(budget);
 
     };
     
@@ -197,17 +182,19 @@ const controller = ((budgetCtrl, UICtrl) => {
         //get the input data
         let input = UICtrl.getInput();
 
-        //add the item to the budget controller
-        let newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+        if(input.description !== '' && !isNaN(input.value) && input.value > 0) {
+            //add the item to the budget controller
+            let newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
-        //add the item to the UI
-        UICtrl.addItemToUI(newItem, input.type);
+            //add the item to the UI
+            UICtrl.addItemToUI(newItem, input.type);
 
-        //clear the input fields
-        UICtrl.clearInputFields();
+            //clear the input fields
+            UICtrl.clearInputFields();
 
-        //calculate and update budget
-        updateBudget();
+            //calculate and update budget
+            updateBudget();
+        }
     };
     
     return {
