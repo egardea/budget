@@ -64,6 +64,10 @@ const budgetController = (() => {
 
         },
 
+        deleteItem: (type, id) => {
+            
+        },
+
         calcBudget: () => {
             //calculate the total income and expenses
             calcTotal('inc');
@@ -110,6 +114,7 @@ const UIController = (() => {
         incomeLabel: '.budget__income--value',
         expenseLabel: '.budget__expenses--value',
         percentageLabel: '.budget__expenses--percentage',
+        listContainer: '.container',
     };
 
     const formatNumber = (n) => {
@@ -193,6 +198,8 @@ const controller = ((budgetCtrl, UICtrl) => {
                 ctrlAddItem();
             }
         });
+
+        document.querySelector(DOMStrings.listContainer).addEventListener('click', ctrlDeleteItem);
     };
 
     const updateBudget = () => {
@@ -225,10 +232,38 @@ const controller = ((budgetCtrl, UICtrl) => {
             updateBudget();
         }
     };
+
+    const ctrlDeleteItem = (event) => {
+        let getitemID, splitID, type, ID;
+
+        //retrieve id from html
+        getitemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+        
+        //split the income-0 
+        splitID = getitemID.split('-');
+        type = splitID[0];
+        ID = parseFloat(splitID[1]);
+
+        //delete item from the data structure
+
+        //delete item from the UI
+
+        //update the budget numbers
+
+        //update the percentages
+
+        
+    };
     
     return {
         init: () => {
             console.log('app has started');
+            UICtrl.displayBudget({
+                budget: 0,
+                totalInc: 0,
+                totalExp: 0,
+                percentage: -1
+            });
             eventListenerSetUp();
         },
     };
