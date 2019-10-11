@@ -103,13 +103,6 @@ const budgetController = (() => {
             };
         },
 
-        getAllItems: () => {
-            return {
-                inc: data.allItems.inc,
-                exp: data.allItems.exp,
-            }
-        },
-
         testing: () => {
             console.log(data);
         },
@@ -153,9 +146,9 @@ const UIController = (() => {
         },
 
         //takes in the Income or Expense object from budget controller and adds it to the UI
-        addItemToUI: (input) => { /** input, type */
-            /*const listItem = `
-                <div class="item clearfix" id="${input.type === 'exp' ? 'exp' : 'inc'}-${input.id}">
+        addItemToUI: (input, type) => {
+            const listItem = `
+                <div class="item clearfix" id="${type === 'exp' ? 'exp' : 'inc'}-${input.id}">
                     <div class="item__description">${input.description}</div>
                     <div class="right clearfix">
                         <div class="item__value">${type === 'exp' ? '-' : '+'} ${input.value}</div>
@@ -165,77 +158,46 @@ const UIController = (() => {
                         </div>
                     </div>
                 </div>  
-            `;*/
+            `;
 
-            let inc, exp;
-
-            inc = input.inc;
-            exp = input.exp;
-            console.log(inc);
-
-            /*
             if(type === 'exp') {
                 document.querySelector(DOMStrings.expenseList).insertAdjacentHTML('beforeend', listItem);
             } else if(type === 'inc') {
                 document.querySelector(DOMStrings.incomeList).insertAdjacentHTML('beforeend', listItem);
             }
-            */
-    
-            if(input.exp > 0){
-                let listItem = inc.map((current) => {
-                    console.log(current);
-                    return `
-                        <div class="item clearfix" id="exp-${current.id}">
-                            <div class="item__description">${current.description}</div>
-                            <div class="right clearfix">
-                                <div class="item__value">- ${current.value}</div>
-                                <div class="item__percentage">21%</div>
-                                <div class="item__delete">
-                                    <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                document.querySelector(DOMStrings.expenseList).insertAdjacentHTML('beforeend', listItem);
-            } else if (input.inc > 0) {
-                let listItem = exp.map((current) => {
-                    return `
-                        <div class="item clearfix" id="exp-${current.id}">
-                            <div class="item__description">${current.description}</div>
-                            <div class="right clearfix">
-                                <div class="item__value">- ${current.value}</div>
-                                <div class="item__delete">
-                                    <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                document.querySelector(DOMStrings.incomeList).insertAdjacentHTML('beforeend', listItem);
-            }
+        },
+        
+        deleteItemfromUI: (elementId) => {
+            //select the element that will be removed
+            let el = document.getElementById(elementId);
+            //go up to the parent element and back to the element to remove
+            el.parentNode.removeChild(el)
         },
 
         clearInputFields: () => {
             let fields, fieldsToArray;
+            //select the elements
             fields = document.querySelectorAll(`${DOMStrings.description}, ${DOMStrings.value}`);
 
+            //turn the element nodes into an array
             fieldsToArray = Array.prototype.slice.call(fields);
 
+            //loop through that array to delete the values
             fieldsToArray.forEach((current) => {
                 current.value = '';
-            })
+            });
 
+            //select the first index to always focus on it
             fieldsToArray[0].focus();
         },
 
         displayBudget: (obj) => {
+            //select all the dom elements and add the numbers for the budget by passing the budget object
             document.querySelector(DOMStrings.budgetLabel).textContent = formatNumber(obj.budget);
             document.querySelector(DOMStrings.incomeLabel).textContent = formatNumber(obj.totalInc);
-            document.querySelector(DOMStrings.expenseLabel).textContent = formatNumber(obj.totalExp);
+            document.querySelector(DOMStrings.expenseLabel).textContent = formatNumber(obj.totalExp);   
 
+            //only add the percentage if its greater than zero
             if(obj.percentage > 0) {
                 document.querySelector(DOMStrings.percentageLabel).textContent = obj.percentage + '%';
             } else {
@@ -260,6 +222,7 @@ const controller = ((budgetCtrl, UICtrl) => {
             }
         });
 
+        //selects the child element that needs to be deleted and executes the delete function
         document.querySelector(DOMStrings.listContainer).addEventListener('click', ctrlDeleteItem);
     };
 
@@ -278,14 +241,13 @@ const controller = ((budgetCtrl, UICtrl) => {
     const ctrlAddItem = () => {
         //get the input data
         let input = UICtrl.getInput();
-        let allItems = budgetCtrl.getAllItems();
         
         if(input.description !== '' && !isNaN(input.value) && input.value > 0) {
             //add the item to the budget controller
             let newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
             //add the item to the UI
-            UICtrl.addItemToUI(allItems);/** newItem, input.type */
+            UICtrl.addItemToUI(newItem, input.type);
 
             //clear the input fields
             UICtrl.clearInputFields();
@@ -310,8 +272,10 @@ const controller = ((budgetCtrl, UICtrl) => {
         budgetCtrl.deleteItem(type, ID);
 
         //delete item from the UI
+        UICtrl.deleteItemfromUI(getitemID);
 
         //update the budget numbers
+        updateBudget();
 
         //update the percentages
 
