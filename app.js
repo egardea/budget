@@ -64,8 +64,18 @@ const budgetController = (() => {
 
         },
 
-        deleteItem: (type, id) => {
+        deleteItem: (type, ID) => {
+            let index, ids;
+        
+            ids = data.allItems[type].map((current) => {
+                return current.id;
+            });
             
+            index = ids.indexOf(ID);
+
+            if(index !== -1){
+                data.allItems[type].splice(index, 1);
+            }
         },
 
         calcBudget: () => {
@@ -91,6 +101,13 @@ const budgetController = (() => {
                 totalExp: data.totals.exp,
                 percentage: data.percentage
             };
+        },
+
+        getAllItems: () => {
+            return {
+                inc: data.allItems.inc,
+                exp: data.allItems.exp,
+            }
         },
 
         testing: () => {
@@ -136,9 +153,9 @@ const UIController = (() => {
         },
 
         //takes in the Income or Expense object from budget controller and adds it to the UI
-        addItemToUI: (input, type) => {
-            const listItem = `
-                <div class="item clearfix" id="${input.type === 'exp' ? 'expense' : 'income'}-${input.id}">
+        addItemToUI: (input) => { /** input, type */
+            /*const listItem = `
+                <div class="item clearfix" id="${input.type === 'exp' ? 'exp' : 'inc'}-${input.id}">
                     <div class="item__description">${input.description}</div>
                     <div class="right clearfix">
                         <div class="item__value">${type === 'exp' ? '-' : '+'} ${input.value}</div>
@@ -148,11 +165,55 @@ const UIController = (() => {
                         </div>
                     </div>
                 </div>  
-            `;
+            `;*/
 
+            let inc, exp;
+
+            inc = input.inc;
+            exp = input.exp;
+            console.log(inc);
+
+            /*
             if(type === 'exp') {
                 document.querySelector(DOMStrings.expenseList).insertAdjacentHTML('beforeend', listItem);
             } else if(type === 'inc') {
+                document.querySelector(DOMStrings.incomeList).insertAdjacentHTML('beforeend', listItem);
+            }
+            */
+    
+            if(input.exp > 0){
+                let listItem = inc.map((current) => {
+                    console.log(current);
+                    return `
+                        <div class="item clearfix" id="exp-${current.id}">
+                            <div class="item__description">${current.description}</div>
+                            <div class="right clearfix">
+                                <div class="item__value">- ${current.value}</div>
+                                <div class="item__percentage">21%</div>
+                                <div class="item__delete">
+                                    <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                document.querySelector(DOMStrings.expenseList).insertAdjacentHTML('beforeend', listItem);
+            } else if (input.inc > 0) {
+                let listItem = exp.map((current) => {
+                    return `
+                        <div class="item clearfix" id="exp-${current.id}">
+                            <div class="item__description">${current.description}</div>
+                            <div class="right clearfix">
+                                <div class="item__value">- ${current.value}</div>
+                                <div class="item__delete">
+                                    <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
                 document.querySelector(DOMStrings.incomeList).insertAdjacentHTML('beforeend', listItem);
             }
         },
@@ -217,13 +278,14 @@ const controller = ((budgetCtrl, UICtrl) => {
     const ctrlAddItem = () => {
         //get the input data
         let input = UICtrl.getInput();
-
+        let allItems = budgetCtrl.getAllItems();
+        
         if(input.description !== '' && !isNaN(input.value) && input.value > 0) {
             //add the item to the budget controller
             let newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
             //add the item to the UI
-            UICtrl.addItemToUI(newItem, input.type);
+            UICtrl.addItemToUI(allItems);/** newItem, input.type */
 
             //clear the input fields
             UICtrl.clearInputFields();
@@ -242,9 +304,10 @@ const controller = ((budgetCtrl, UICtrl) => {
         //split the income-0 
         splitID = getitemID.split('-');
         type = splitID[0];
-        ID = parseFloat(splitID[1]);
+        ID = parseInt(splitID[1]);
 
         //delete item from the data structure
+        budgetCtrl.deleteItem(type, ID);
 
         //delete item from the UI
 
