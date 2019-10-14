@@ -159,6 +159,12 @@ const UIController = (() => {
         return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + (parts[1] ? "." + parts[1] : "");
     };
 
+    const nodeListForEach = (list, callback) => {
+        for(let i = 0; i < list.length; i++) {
+            callback(list[i], i);
+        }
+    };
+
     return {
         getInput: () => {
             return {
@@ -235,12 +241,6 @@ const UIController = (() => {
         displayPercentages: (percentages) => {
             //get all the expense items
             let expenseNodes = document.querySelectorAll(DOMStrings.expensePercentageLabel);
-            
-            const nodeListForEach = (list, callback) => {
-                for(let i = 0; i < expenseNodes.length; i++) {
-                    callback(expenseNodes[i], i);
-                }
-            };
 
             nodeListForEach(expenseNodes, (current, index) => {
                 if(percentages[index] > 0){
@@ -263,6 +263,17 @@ const UIController = (() => {
             document.querySelector(DOMStrings.monthLabel).textContent = months[month];
             
         },
+
+        toggleColorOnInput: () => {
+            //get all the input fields
+            let inputFields = document.querySelectorAll(`${DOMStrings.inputType}, ${DOMStrings.description}, ${DOMStrings.value}`);
+            //
+            nodeListForEach(inputFields, (current) => {
+                current.classList.toggle('red-focus');
+            });
+
+            document.querySelector(DOMStrings.inputBtn).classList.toggle('red');
+        },
     };
 
 })();
@@ -283,6 +294,9 @@ const controller = ((budgetCtrl, UICtrl) => {
 
         //selects the child element that needs to be deleted and executes the delete function
         document.querySelector(DOMStrings.listContainer).addEventListener('click', ctrlDeleteItem);
+
+        //adds the event change on the input type element
+        document.querySelector(DOMStrings.inputType).addEventListener('change', UICtrl.toggleColorOnInput);
     };
 
     const updateBudget = () => {
