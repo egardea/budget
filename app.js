@@ -6,7 +6,18 @@ const budgetController = (() => {
             this.id = id;
             this.description = description;
             this.value = value;
-        }
+            this.percentage = -1;
+        };
+        calcPercentage(totalInc) {
+            if(totalInc > 0) {
+                this.percentage = Math.round((this.value / totalInc) * 100)
+            } else {
+                this.percentage = -1;
+            }
+        };
+        getPercentage(){
+            return this.percentage;
+        };
     };
 
     class Income {
@@ -94,6 +105,20 @@ const budgetController = (() => {
             }
         },
 
+        calculatePercentages: () => {
+            data.allItems.exp.forEach((current) => {
+                current.calcPercentage(data.totals.inc);
+            });
+        },
+
+        getPercentages: () => {
+            let allPercentages = data.allItems.exp.map((current) => {
+                return current.getPercentage();
+            });
+
+            return allPercentages;
+        },
+
         getBudget: () => {
             return {
                 budget: data.budget,
@@ -104,7 +129,8 @@ const budgetController = (() => {
         },
 
         testing: () => {
-            console.log(data);
+            console.log(data)
+            console.log(allPercentages);
         },
     };
 
@@ -171,7 +197,7 @@ const UIController = (() => {
             //select the element that will be removed
             let el = document.getElementById(elementId);
             //go up to the parent element and back to the element to remove
-            el.parentNode.removeChild(el)
+            el.parentNode.removeChild(el);
         },
 
         clearInputFields: () => {
@@ -237,6 +263,16 @@ const controller = ((budgetCtrl, UICtrl) => {
         UICtrl.displayBudget(budget);
 
     };
+
+    const updatePercentages = () => {
+        //calculate the percentages
+        budgetCtrl.calculatePercentages();
+
+        //read them from the budget controller
+
+        //update the UI with the new percentages
+
+    };
     
     const ctrlAddItem = () => {
         //get the input data
@@ -254,6 +290,9 @@ const controller = ((budgetCtrl, UICtrl) => {
 
             //calculate and update budget
             updateBudget();
+
+            //update the percentages
+            updatePercentages();
         }
     };
 
@@ -278,8 +317,7 @@ const controller = ((budgetCtrl, UICtrl) => {
         updateBudget();
 
         //update the percentages
-
-        
+        updatePercentages();
     };
     
     return {
