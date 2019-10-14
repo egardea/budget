@@ -151,6 +151,7 @@ const UIController = (() => {
         percentageLabel: '.budget__expenses--percentage',
         listContainer: '.container',
         expensePercentageLabel: '.item__percentage',
+        monthLabel: '.budget__title--month',
     };
 
     const formatNumber = (n) => {
@@ -177,7 +178,7 @@ const UIController = (() => {
                 <div class="item clearfix" id="${type === 'exp' ? 'exp' : 'inc'}-${input.id}">
                     <div class="item__description">${input.description}</div>
                     <div class="right clearfix">
-                        <div class="item__value">${type === 'exp' ? '-' : '+'} ${input.value}</div>
+                        <div class="item__value">${type === 'exp' ? '-' : '+'} ${formatNumber(input.value)}</div>
                         ${type === 'exp' ? `<div class="item__percentage">21%</div>` : ''}
                         <div class="item__delete">
                             <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>
@@ -249,6 +250,19 @@ const UIController = (() => {
                 }
             });
         },
+
+        displayMonth: () => {
+            let currentDate, months, month;
+            //get current date
+            currentDate = new Date();
+            //array with month names
+            months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            //get the current month index
+            month = currentDate.getMonth();
+            //use the index to return the month string
+            document.querySelector(DOMStrings.monthLabel).textContent = months[month];
+            
+        },
     };
 
 })();
@@ -289,7 +303,7 @@ const controller = ((budgetCtrl, UICtrl) => {
 
         //read them from the budget controller
         let percentages = budgetCtrl.getPercentages();
-        console.log(percentages);
+
         //update the UI with the new percentages
         UICtrl.displayPercentages(percentages);
 
@@ -350,6 +364,7 @@ const controller = ((budgetCtrl, UICtrl) => {
                 totalExp: 0,
                 percentage: -1
             });
+            UICtrl.displayMonth();
             eventListenerSetUp();
         },
     };
