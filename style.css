@@ -21,6 +21,7 @@ body {
     position: relative;
     height: 100vh;
     font-weight: 400;
+    width: 100%;
 }
 
 .right { float: right; }
@@ -33,7 +34,8 @@ body {
 
 .top {
     height: 40vh;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35));
+    width: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35));
     background-size: cover;
     background-position: center;
     position: relative;

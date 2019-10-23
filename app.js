@@ -187,7 +187,7 @@ const UIController = (() => {
                         <div class="item__value">${type === 'exp' ? '-' : '+'} ${formatNumber(input.value)}</div>
                         ${type === 'exp' ? `<div class="item__percentage">21%</div>` : ''}
                         <div class="item__delete">
-                            <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button>
+                            <button class="item__delete--btn"><i class="fas fa-times-circle"></i></button>
                         </div>
                     </div>
                 </div>  
@@ -228,7 +228,7 @@ const UIController = (() => {
             //select all the dom elements and add the numbers for the budget by passing the budget object
             document.querySelector(DOMStrings.budgetLabel).textContent = formatNumber(obj.budget);
             document.querySelector(DOMStrings.incomeLabel).textContent = formatNumber(obj.totalInc);
-            document.querySelector(DOMStrings.expenseLabel).textContent = formatNumber(obj.totalExp);   
+            document.querySelector(DOMStrings.expenseLabel).textContent = formatNumber(obj.totalExp);
 
             //only add the percentage if its greater than zero
             if(obj.percentage > 0) {
